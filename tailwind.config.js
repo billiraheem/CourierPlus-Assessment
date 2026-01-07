@@ -8,15 +8,15 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#823C72', // User specified
+          DEFAULT: '#823C72', 
           hover: '#6a315d',
           foreground: '#ffffff',
         },
         text: {
-          primary: '#1A1B1B', // User specified
-          secondary: '#424344', // User specified
-          tertiary: '#58595B', // User specified
-          link: '#823C72', // User specified
+          primary: '#1A1B1B', 
+          secondary: '#424344', 
+          tertiary: '#58595B',
+          link: '#823C72', 
         },
         background: '#ffffff',
       },
