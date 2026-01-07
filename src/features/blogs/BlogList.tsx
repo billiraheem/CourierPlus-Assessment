@@ -8,21 +8,21 @@ import { DeleteConfirmationModal } from '../../components/ui/delete-modal';
 import { BlogForm } from './BlogForm';
 import { useDashboard } from '../../context/DashboardContext';
 import { useEffect } from 'react';
+import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../services/blogService';
+import type { Blog } from '../../interface/blog.interface';
+import { showToast } from '../../utils/toastUtils';
+import { globalErrorHandler } from '../../utils/globalErrorHandler';
+import { Loading } from '../../components/ui/loading';
 
-// Placeholder Card component until core one is built
-interface Blog {
-    id: string;
-    title: string;
-    description: string;
-}
 
-const BlogCard = ({ blog, onEdit, onDelete }: { blog: Blog, onEdit: (blog: Blog) => void, onDelete: (id: string) => void }) => (
+
+const BlogCard = ({ blog, onEdit, onDelete }: { blog: Blog, onEdit: (blog: Blog) => void, onDelete: (id: number) => void }) => (
     <Card className="hover:shadow-md transition-shadow">
         <CardHeader>
             <CardTitle className="text-xl">{blog.title}</CardTitle>
         </CardHeader>
         <CardContent>
-            <p className="text-text-secondary line-clamp-2">{blog.description || "No description provided."}</p>
+            <p className="text-text-secondary line-clamp-2">{blog.content || "No content provided."}</p>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
             <Link to={`/dashboard/blogs/${blog.id}`}>
@@ -40,38 +40,103 @@ const BlogCard = ({ blog, onEdit, onDelete }: { blog: Blog, onEdit: (blog: Blog)
 
 export const BlogList = () => {
     const { setTitle } = useDashboard();
+    const [blogs, setBlogs] = useState<Blog[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
-    const [deletingBlogId, setDeletingBlogId] = useState<string | null>(null);
+    const [deletingBlogId, setDeletingBlogId] = useState<number | null>(null);
+
+    const fetchBlogs = async () => {
+        try {
+            setIsLoading(true);
+            const response = await getBlogs();
+            if (!response.error) {
+                setBlogs(response.data);
+            }
+        } catch (error: any) {
+            const { message, title, severity } = globalErrorHandler(error.data, error);
+            showToast({ title, message, severity });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         setTitle('Blogs');
+        fetchBlogs();
     }, [setTitle]);
 
-    // Dummy Data
-    const blogs = [
-        { id: '1', title: 'Tech Trends 2025', description: 'Latest updates in technology.' },
-        { id: '2', title: 'Healthy Living', description: 'Tips for a better lifestyle.' },
-        { id: '3', title: 'Travel Diaries', description: 'Exploring the world.' },
-    ];
+    const handleCreateBlog = async (values: { title: string; content: string }) => {
+        try {
+            const formData = new FormData();
+            formData.append('title', values.title);
+            formData.append('content', values.content);
 
-    const handleCreateBlog = (values: { title: string; description: string }) => {
-        console.log("Creating Blog:", values);
-        setIsCreateModalOpen(false);
-        // Implementation with API later
-    };
+            const response = await createBlog(formData);
 
-    const handleEditBlog = (values: { title: string; description: string }) => {
-        console.log("Updating Blog:", editingBlog?.id, values);
-        setEditingBlog(null);
-    };
-
-    const handleDeleteBlog = () => {
-        if (deletingBlogId) {
-            console.log("Deleting Blog:", deletingBlogId);
-            setDeletingBlogId(null);
+            if (!response.error) {
+                showToast({
+                    title: 'Success',
+                    message: response.message || 'Blog created successfully',
+                    severity: 'success',
+                });
+                setIsCreateModalOpen(false);
+                fetchBlogs(); // Refresh to show new blog
+            }
+        } catch (error: any) {
+            const { message, title, severity } = globalErrorHandler(error.data, error);
+            showToast({ title, message, severity });
         }
     };
+
+    const handleEditBlog = async (values: { title: string; content: string }) => {
+        if (!editingBlog) return;
+        try {
+            const formData = new FormData();
+            formData.append('title', values.title);
+            formData.append('content', values.content);
+            // formData.append('_method', 'PUT'); // Uncommon but sometimes needed for Laravel POST updates. 
+            // If it fails, I'll add it. User curl didn't show it.
+
+            const response = await updateBlog(editingBlog.id, formData);
+
+            if (!response.error) {
+                showToast({
+                    title: 'Success',
+                    message: response.message || 'Blog updated successfully',
+                    severity: 'success',
+                });
+                setEditingBlog(null);
+                fetchBlogs();
+            }
+        } catch (error: any) {
+            const { message, title, severity } = globalErrorHandler(error.data, error);
+            showToast({ title, message, severity });
+        }
+    };
+
+    const handleDeleteBlog = async () => {
+        if (!deletingBlogId) return;
+        try {
+            const response = await deleteBlog(deletingBlogId);
+            if (!response.error) {
+                showToast({
+                    title: 'Success',
+                    message: response.message || 'Blog deleted successfully',
+                    severity: 'success',
+                });
+                setDeletingBlogId(null);
+                fetchBlogs();
+            }
+        } catch (error: any) {
+            const { message, title, severity } = globalErrorHandler(error.data, error);
+            showToast({ title, message, severity });
+        }
+    };
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return (
         <div className="space-y-6">
@@ -105,6 +170,7 @@ export const BlogList = () => {
                 <BlogForm
                     onSubmit={handleCreateBlog}
                     onCancel={() => setIsCreateModalOpen(false)}
+                    isLoading={isLoading}
                 />
             </Modal>
 
@@ -118,6 +184,7 @@ export const BlogList = () => {
                         initialValues={editingBlog}
                         onSubmit={handleEditBlog}
                         onCancel={() => setEditingBlog(null)}
+                        isLoading={isLoading}
                     />
                 )}
             </Modal>

@@ -2,7 +2,7 @@ import { cn } from '../../utils/cn';
 import { Loader2 } from 'lucide-react';
 
 interface LoadingProps {
-    type?: 'spin'; // Keeping prop for API compatibility, though we only support spin now
+    type?: 'spin';
     color?: string;
     height?: number | string;
     width?: number | string;

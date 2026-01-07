@@ -4,7 +4,10 @@ import * as Yup from 'yup';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/authService';
+import { showToast } from '../../utils/toastUtils';
+import { globalErrorHandler } from '../../utils/globalErrorHandler';
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Required'),
@@ -12,6 +15,7 @@ const LoginSchema = Yup.object().shape({
 });
 
 export const Login = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
     // Placeholder function for Google Login
@@ -27,12 +31,35 @@ export const Login = () => {
         },
         validationSchema: LoginSchema,
         onSubmit: async (values, { setSubmitting }) => {
-            // Mock login for now
-            console.log(values);
-            setTimeout(() => {
+            try {
+                const formData = new FormData();
+                formData.append('email', values.email);
+                formData.append('password', values.password);
+
+                const response = await loginUser(formData);
+
+                if (!response.error) {
+                    showToast({
+                        title: 'Success',
+                        message: response.message || 'Login successful',
+                        severity: 'success',
+                    });
+
+                    if (response.data?.token) {
+                        localStorage.setItem('token', response.data.token);
+                        navigate('/dashboard');
+                    }
+                }
+            } catch (error: any) {
+                const { message, title, severity } = globalErrorHandler(error.data, error);
+                showToast({
+                    title,
+                    message,
+                    severity,
+                });
+            } finally {
                 setSubmitting(false);
-                // navigate('/dashboard'); // Uncomment when dashboard is ready
-            }, 2000);
+            }
         },
     });
 

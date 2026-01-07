@@ -11,7 +11,6 @@ export const AuthLayout = () => {
 
                 <div className="relative w-full flex flex-col justify-between p-12 text-white z-10">
                     <div>
-                        {/* Logo placeholder if needed */}
                         <h1 className="text-3xl font-bold italic">TrackPlus</h1>
                     </div>
 
@@ -19,7 +18,6 @@ export const AuthLayout = () => {
                         <h2 className="text-4xl font-bold leading-tight">
                             Your trusted gateway to seamless logistics services, anytime, anywhere.
                         </h2>
-                        {/* Dots for carousel visual */}
                         <div className="flex space-x-2">
                             <div className="h-2 w-2 rounded-full bg-white/50" />
                             <div className="h-2 w-2 rounded-full bg-white" />
@@ -31,11 +29,9 @@ export const AuthLayout = () => {
                     <div className="space-y-4">
                         <p className="text-sm font-medium opacity-90">Download the TrackPlus App</p>
                         <div className="flex gap-4">
-                            {/* Google Play Placeholder */}
                             <div className="bg-black text-white px-4 py-2 rounded flex items-center gap-2 cursor-pointer border border-gray-700">
                                 <div className="text-xs">GET IT ON <br /><span className="text-lg font-bold">Google Play</span></div>
                             </div>
-                            {/* App Store Placeholder */}
                             <div className="bg-black text-white px-4 py-2 rounded flex items-center gap-2 cursor-pointer border border-gray-700">
                                 <div className="text-xs">Download on the <br /><span className="text-lg font-bold">App Store</span></div>
                             </div>

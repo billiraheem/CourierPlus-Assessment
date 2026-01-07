@@ -3,11 +3,11 @@ import { Button } from '../../components/ui/button';
 import { Edit2, Trash2 } from 'lucide-react';
 
 type PostCardProps = {
-    id: string;
+    id: string | number;
     title: string;
     content: string;
     onEdit?: (post?: any) => void;
-    onDelete?: (id: string) => void;
+    onDelete?: (id: string | number) => void;
 };
 
 export const PostCard = ({ id, title, content, onEdit, onDelete }: PostCardProps) => {

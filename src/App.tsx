@@ -4,6 +4,8 @@ import { Login } from './features/auth/Login';
 import { BlogList } from './features/blogs/BlogList';
 import { BlogDetails } from './features/blogs/BlogDetails';
 import { DashboardLayout } from './components/layout/DashboardLayout';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
           <Route index element={<Navigate to="blogs" replace />} />
         </Route>
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

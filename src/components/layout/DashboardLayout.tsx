@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, LogOut, Menu, X } from 'lucide-react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, LogOut, Menu, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../../utils/cn';
 import { DashboardProvider, useDashboard } from '../../context/DashboardContext';
@@ -8,7 +8,13 @@ import { DashboardProvider, useDashboard } from '../../context/DashboardContext'
 const DashboardLayoutContent = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const location = useLocation();
+    const navigate = useNavigate();
     const { title } = useDashboard();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
 
     const navItems = [
         { label: 'Blogs', path: '/dashboard/blogs', icon: <LayoutDashboard size={20} /> },
@@ -49,7 +55,11 @@ const DashboardLayoutContent = () => {
                 </div>
 
                 <div className="absolute bottom-4 left-4 right-4">
-                    <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50">
+                    <Button
+                        variant="ghost"
+                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={handleLogout}
+                    >
                         <LogOut size={18} className="mr-2" />
                         Logout
                     </Button>
