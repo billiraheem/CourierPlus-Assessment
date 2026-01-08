@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, FileText } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { Empty } from '../../components/ui/empty';
 import { PostCard } from '../posts/PostCard';
 import { Modal } from '../../components/ui/modal';
 import { DeleteConfirmationModal } from '../../components/ui/delete-modal';
@@ -170,7 +171,10 @@ export const BlogDetails = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-200 pb-6">
                 <div>
                     {/* Title moved to header */}
-                    <p className="text-text-secondary mt-1">{blog.content}</p>
+                    <div
+                        className="text-text-secondary mt-1 prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: blog.content }}
+                    />
                 </div>
                 <Button onClick={() => setIsCreatePostModalOpen(true)}>
                     <Plus size={18} className="mr-2" />
@@ -180,7 +184,12 @@ export const BlogDetails = () => {
 
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-text-primary">Posts ({posts.length})</h2>
-                {posts.length > 0 ? (
+                <Empty
+                    isEmpty={posts.length === 0}
+                    title="No posts found"
+                    description="This blog doesn't have any posts yet. Write something interesting to get started!"
+                    icon={<FileText className="h-6 w-6 text-gray-400" />}
+                >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {posts.map(post => (
                             <div key={post.id} onClick={() => setViewingPost(post)} className="cursor-pointer">
@@ -192,14 +201,7 @@ export const BlogDetails = () => {
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <div className="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300">
-                        <p className="text-text-secondary">No posts found for this blog.</p>
-                        <Button variant="link" className="mt-2 text-primary" onClick={() => setIsCreatePostModalOpen(true)}>
-                            Create your first post
-                        </Button>
-                    </div>
-                )}
+                </Empty>
             </div>
 
             <Modal

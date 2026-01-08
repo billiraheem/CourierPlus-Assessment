@@ -7,5 +7,10 @@
 @layer base {
   body {
     @apply font-sans text-text-primary bg-background antialiased;
+    height: 100dvh !important;
+  }
+
+  #root {
+    height: 100dvh !important;
   }
 }

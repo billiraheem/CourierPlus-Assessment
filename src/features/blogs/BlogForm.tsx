@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { RichTextEditor } from '../../components/ui/RichTextEditor';
 
 interface BlogFormProps {
     initialValues?: {
@@ -44,15 +45,9 @@ export const BlogForm = ({ initialValues, onSubmit, onCancel, isLoading }: BlogF
                 <label htmlFor="content" className="text-sm font-medium text-text-secondary">
                     Content
                 </label>
-                <textarea
-                    id="content"
-                    name="content"
-                    rows={4}
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Describe your blog collection..."
-                    value={formik.values.content}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
+                <RichTextEditor
+                    content={formik.values.content}
+                    onChange={(html) => formik.setFieldValue('content', html)}
                 />
             </div>
 

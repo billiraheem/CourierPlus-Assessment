@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Modal } from '../../components/ui/modal';
 import { DeleteConfirmationModal } from '../../components/ui/delete-modal';
 import { BlogForm } from './BlogForm';
+import { Empty } from '../../components/ui/empty';
 import { useDashboard } from '../../context/DashboardContext';
 import { useEffect } from 'react';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../services/blogService';
@@ -22,7 +23,10 @@ const BlogCard = ({ blog, onEdit, onDelete }: { blog: Blog, onEdit: (blog: Blog)
             <CardTitle className="text-xl">{blog.title}</CardTitle>
         </CardHeader>
         <CardContent>
-            <p className="text-text-secondary line-clamp-2">{blog.content || "No content provided."}</p>
+            <div
+                className="text-text-secondary line-clamp-2 prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: blog.content || "No content provided." }}
+            />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
             <Link to={`/dashboard/blogs/${blog.id}`}>
@@ -95,8 +99,6 @@ export const BlogList = () => {
             const formData = new FormData();
             formData.append('title', values.title);
             formData.append('content', values.content);
-            // formData.append('_method', 'PUT'); // Uncommon but sometimes needed for Laravel POST updates. 
-            // If it fails, I'll add it. User curl didn't show it.
 
             const response = await updateBlog(editingBlog.id, formData);
 
@@ -151,16 +153,22 @@ export const BlogList = () => {
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogs.map(blog => (
-                    <BlogCard
-                        key={blog.id}
-                        blog={blog}
-                        onEdit={setEditingBlog}
-                        onDelete={setDeletingBlogId}
-                    />
-                ))}
-            </div>
+            <Empty
+                isEmpty={blogs.length === 0}
+                title="No blogs found"
+                description="Get started by creating your first blog collection to manage your posts."
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {blogs.map(blog => (
+                        <BlogCard
+                            key={blog.id}
+                            blog={blog}
+                            onEdit={setEditingBlog}
+                            onDelete={setDeletingBlogId}
+                        />
+                    ))}
+                </div>
+            </Empty>
 
             <Modal
                 isOpen={isCreateModalOpen}

@@ -44,9 +44,10 @@ export const PostDetailsModal = ({ isOpen, onClose, post }: PostDetailsModalProp
             <div className="space-y-6">
                 {isLoading && <div className="text-xs text-primary mb-2">Refreshing details...</div>}
 
-                <div className="text-text-secondary whitespace-pre-wrap leading-relaxed">
-                    {displayPost.content}
-                </div>
+                <div
+                    className="text-text-secondary whitespace-pre-wrap leading-relaxed prose prose-sm sm:prose-base max-w-none"
+                    dangerouslySetInnerHTML={{ __html: displayPost.content }}
+                />
 
                 {/* Likes & Comments Section */}
                 <div className="border-t border-gray-100 pt-4 space-y-4">

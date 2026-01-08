@@ -1,9 +1,8 @@
 import axios, { type AxiosRequestConfig, type AxiosError } from 'axios';
 
-// Base URL from environment or fallback to the provided URL
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-// An Axios instance with a base URL and default headers
 const api = axios.create({
     baseURL: BASE_URL,
     headers: {
